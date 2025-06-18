@@ -69,3 +69,4 @@ This project presents a comprehensive solution for intelligent fan control, leve
 ---
 
 > 💡 *This project integrates hardware control, real-time scheduling, and mobile development into a simple yet effective smart home utility.*
+> *Built with AI tools for code suggestions/debugging.*  
