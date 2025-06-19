@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="#1B1616"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fan Status: Unknown"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintBottom_toTopOf="@+id/onOffButtonsLayout" />
+
+    <LinearLayout
+        android:id="@+id/onOffButtonsLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/statusTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/scheduleHeader"
+        app:layout_constraintWidth_percent="0.8">
+        <Button
+            android:id="@+id/onButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Turn Fan ON"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/offButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Turn Fan OFF"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/scheduleHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set Automatic OFF Time"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        android:textColor="@color/white"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@+id/onOffButtonsLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/scheduleButtonsLayout" />
+
+    <LinearLayout
+        android:id="@+id/scheduleButtonsLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/scheduleHeader"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/currentScheduleTextView"
+        app:layout_constraintWidth_percent="0.9">
+        <Button
+            android:id="@+id/setScheduleButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Set Auto OFF"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/cancelScheduleButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancel Schedule"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/currentScheduleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Schedule: None"
+        android:textSize="18sp"
+        android:textStyle="normal"
+        android:textColor="@color/white"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@+id/scheduleButtonsLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/ipConfigLayout" />
+
+    <LinearLayout
+        android:id="@+id/ipConfigLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@+id/currentScheduleTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintWidth_percent="0.9">
+
+        <TextView
+            android:id="@+id/ipConfigHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NodeMCU IP Address"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            android:textColor="@color/white"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/ipAddressEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g., 192.168.1.100"
+            android:inputType="number|textNoSuggestions"  android:digits="0123456789."                  android:textColor="@color/white"
+            android:textColorHint="#CCCCCC"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/saveIpButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save IP Address"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Turn off the manual switch for accurate fan control!"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ipConfigLayout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

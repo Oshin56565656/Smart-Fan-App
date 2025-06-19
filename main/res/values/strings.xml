@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Fancontroller</string>
+    <string-array name="am_pm_options">
+        <item>AM</item>
+        <item>PM</item>
+    </string-array>
+</resources>
