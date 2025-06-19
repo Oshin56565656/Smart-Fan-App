@@ -4,8 +4,8 @@
 #include <WiFiUdp.h>   
 
 
-const char* ssid = "OSHIN";      
-const char* password = "123456789"; 
+const char* ssid = "YOUR_WIFI_SSID";      
+const char* password = "YOUR_WIFI_PASSWORD"; 
 
 
 #define FAN_RELAY_PIN D1 
