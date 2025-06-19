@@ -18,10 +18,10 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", 5.5 * 3600, 60000); 
 
 // --- Fan State and Schedule Variables ---
-bool fanState = false; // true for ON, false for OFF
-unsigned long scheduledOffMillis = 0; // Stores the millis() value when the fan should turn off
-int scheduledOffHour = -1; // Stores the scheduled hour (24-hour format)
-int scheduledOffMinute = -1; // Stores the scheduled minute
+bool fanState = false; 
+unsigned long scheduledOffMillis = 0; 
+int scheduledOffHour = -1; 
+int scheduledOffMinute = -1; 
 
 // --- Function to control the fan relay ---
 void setFan(bool state) {
@@ -39,7 +39,7 @@ void handleRoot() {
 // --- Handler for "/on" endpoint ---
 void handleOn() {
   setFan(true); 
-  scheduledOffMillis = 0; // Clear any pending schedule
+  scheduledOffMillis = 0; 
   scheduledOffHour = -1;
   scheduledOffMinute = -1;
   server.send(200, "text/plain", "Fan ON");
@@ -48,7 +48,7 @@ void handleOn() {
 // --- Handler for "/off" endpoint ---
 void handleOff() {
   setFan(false); 
-  scheduledOffMillis = 0; // Clear any pending schedule
+  scheduledOffMillis = 0; 
   scheduledOffHour = -1;
   scheduledOffMinute = -1;
   server.send(200, "text/plain", "Fan OFF");
@@ -69,9 +69,8 @@ void handleSetOffTime() {
       unsigned long targetEpoch;
       int dayOffset = 0;
 
-      // If the target time has already passed today, schedule for tomorrow
       if (hour < currentHour || (hour == currentHour && minute <= currentMinute)) {
-        dayOffset = 1; // Schedule for next day
+        dayOffset = 1; 
       }
       long currentTotalMinutes = currentHour * 60 + currentMinute;
       long targetTotalMinutes = hour * 60 + minute;
@@ -79,7 +78,7 @@ void handleSetOffTime() {
 
       if (targetTotalMinutes > currentTotalMinutes) {
           minutesUntilOff = targetTotalMinutes - currentTotalMinutes;
-      } else { // Target time is tomorrow
+      } else { 
           minutesUntilOff = (24 * 60 - currentTotalMinutes) + targetTotalMinutes;
       }
 
@@ -155,7 +154,7 @@ void setup() {
     server.on("/cancel", handleCancel);
     server.onNotFound(handleNotFound); 
 
-    server.begin(); // Start the web server
+    server.begin(); 
     Serial.println("HTTP server started");
 
     // Initialize NTP client to get time
