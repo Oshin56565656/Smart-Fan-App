@@ -26,7 +26,7 @@ int scheduledOffMinute = -1;
 // --- Function to control the fan relay ---
 void setFan(bool state) {
   fanState = state;
-  digitalWrite(FAN_RELAY_PIN, fanState ? LOW : HIGH); // If fanState is true (ON), set LOW (ON), else HIGH (OFF)
+  digitalWrite(FAN_RELAY_PIN, fanState ? LOW : HIGH); 
   Serial.print("Fan set to: ");
   Serial.println(fanState ? "ON" : "OFF");
 }
