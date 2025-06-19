@@ -18,6 +18,15 @@ This project presents a comprehensive solution for intelligent fan control, leve
   - Stores and manages the fan state (ON/OFF) and auto-off schedule in volatile memory.
   - Continuously monitors current time and executes auto-off at the specified schedule.
 
+    **Important Note on Wi-Fi Configuration:**
+    The Wi-Fi SSID and Password for the NodeMCU are **hardcoded** directly within the `FanController_NodeMCU.ino` sketch.
+    **Before flashing the firmware to your NodeMCU, you must manually edit these lines in the sketch:**
+    ```cpp
+    const char* ssid = "YOUR_WIFI_SSID";
+    const char* password = "YOUR_WIFI_PASSWORD";
+    ```
+    **Replace `"YOUR_WIFI_SSID"` and `"YOUR_WIFI_PASSWORD"` with your actual Wi-Fi network name and password.** If your Wi-Fi credentials change, you will need to update the sketch and re-flash the NodeMCU.
+
 ### **2. Android Application**
 - **Platform:** Built using Java for Android OS.
 - **User Interface:** Clean, user-friendly with intuitive controls.
@@ -29,8 +38,8 @@ This project presents a comprehensive solution for intelligent fan control, leve
     - Displays confirmation of scheduled time.
   - **Cancel Schedule:** Sends GET request to `/cancel` endpoint.
   - **Dynamic IP Configuration:**
-    - Users can input and save NodeMCU IP using `SharedPreferences`.
-    - App adapts to changes in IP across launches.
+    - Users can input and save NodeMCU IP using `SharedPreferences` directly within the Android app.
+    - This allows the app to adapt to changes in the NodeMCU's assigned local IP address across launches without modifying app code.
   - **Status Feedback:** Shows current fan state (ON, OFF, Scheduled, Error).
   - **Robust Network Handling:**
     - Uses `ExecutorService` for background HTTP tasks to prevent UI freezing.
@@ -55,7 +64,7 @@ This project presents a comprehensive solution for intelligent fan control, leve
 - 🧠 **Convenience:** Control fan from anywhere on the Wi-Fi network.
 - ⚡ **Energy Efficiency:** Prevent unnecessary power usage via scheduling.
 - ⏰ **Smart Wake-Up Feature:** Uses the fan turning off to gently wake users — a modern twist on a classic parenting trick!
-- 🔄 **Flexible IP Handling:** Update IP without modifying code.
+- 🔄 **Flexible IP Handling (App-side):** Update NodeMCU's IP within the Android app without modifying app code.
 - 🧭 **Simple UI:** Clean design for easy interaction.
 
 ---
@@ -69,4 +78,4 @@ This project presents a comprehensive solution for intelligent fan control, leve
 ---
 
 > 💡 *This project integrates hardware control, real-time scheduling, and mobile development into a simple yet effective smart home utility.*
-> 💻  *Built with AI tools for code suggestions/debugging.*  
+> 💻 *Built with AI tools for code suggestions/debugging.*
