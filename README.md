@@ -1,81 +1,76 @@
-# **Wi-Fi Enabled Smart Fan Controller with Android Application**
+# Smart Fan/Light Control with NodeMCU
 
-## **Project Overview**
+This project allows you to control a fan or light using a NodeMCU (ESP8266) via a web interface, including scheduling features.
 
-This project presents a comprehensive solution for intelligent fan control, leveraging the power of a **NodeMCU (ESP8266)** microcontroller as a compact web server, and an intuitive **Android application** for user interaction. The system enables users to remotely control an electric fan, including automatic shut-off scheduling, over a **local Wi-Fi network**, enhancing **convenience** and **energy efficiency**.
+## Hardware Setup
 
 ---
 
-## **Key Components**
+### Connecting the 5V Relay Module (Special Case: VCC, IN, GND Module)
 
-### **1. NodeMCU (ESP8266) Microcontroller**
-- **Role:** Embedded web server and fan controller.
-- **Functionality:**
-  - Connects to the local Wi-Fi network (e.g., mobile hotspot).
-  - Hosts a simple HTTP server that responds to GET requests.
-  - Controls the fan using a relay module or direct connection.
-  - Uses **Network Time Protocol (NTP)** for accurate timekeeping.
-  - Stores and manages the fan state (ON/OFF) and auto-off schedule in volatile memory.
-  - Continuously monitors current time and executes auto-off at the specified schedule.
+**Problem:** If you are using a 5V relay module that **only** has `VCC`, `IN`, and `GND` pins (without a separate `JD-VCC` pin or jumper), and you're powering its `VCC` with 5V from the NodeMCU's `VIN` pin, you might find the relay is always ON or switches unreliably. This happens because the NodeMCU's output pins provide 3.3V, which is not a clear "HIGH" signal for a 5V-powered relay's input circuit, causing a voltage mismatch.
 
-    **Important Note on Wi-Fi Configuration:**
-    The Wi-Fi SSID and Password for the NodeMCU are **hardcoded** directly within the `FanController_NodeMCU.ino` sketch.
-    **Before flashing the firmware to your NodeMCU, you must manually edit these lines in the sketch:**
+**Solution:** To fix this signal voltage mismatch and ensure reliable operation, you need a **Logic Level Shifter (LLS)**. This component will safely convert the NodeMCU's 3.3V control signal to a 5V signal that your relay module can correctly interpret.
+
+#### Components Needed:
+* NodeMCU (ESP8266 board)
+* 5V Relay Module (with VCC, IN, GND pins only)
+* **Bi-directional Logic Level Shifter Module** (e.g., commonly available modules based on BSS138 transistors)
+* Fan or Light (Appliance to control)
+* AC Mains Wires (use appropriate gauge and insulation for your appliance and local electrical standards)
+
+#### Wiring Instructions:
+
+**1. Safety First:** **ALWAYS cut power to the entire circuit, especially the mains voltage, before making ANY wiring changes. Verify no voltage is present with a multimeter or non-contact tester.**
+
+**2. Powering the Logic Level Shifter:**
+    * Connect NodeMCU's **`3V3`** pin (3.3V output) to the **`LV`** (Low Voltage) pin on the Logic Level Shifter.
+    * Connect NodeMCU's **`VIN`** pin (5V output from USB/external supply) to the **`HV`** (High Voltage) pin on the Logic Level Shifter.
+    * Connect NodeMCU's **`GND`** pin to one of the **`GND`** pins on the Logic Level Shifter (there's usually a shared GND on the LLS).
+
+**3. Connecting NodeMCU to Logic Level Shifter:**
+    * Connect NodeMCU's **`D1`** pin (your `FAN_RELAY_PIN`) to an **`LV1`** (or `LVx`, where 'x' is a channel number) pin on the Logic Level Shifter.
+
+**4. Connecting Logic Level Shifter to Relay Module:**
+    * Connect the corresponding **`HV1`** (or `HVx`) pin on the Logic Level Shifter to the Relay Module's **`IN`** pin.
+
+**5. Powering the Relay Module:**
+    * Connect NodeMCU's **`VIN`** pin (5V) to the Relay Module's **`VCC`** pin.
+    * Connect NodeMCU's **`GND`** pin to the Relay Module's **`GND`** pin.
+
+**6. Connecting Appliance (Fan/Light) to Relay:**
+    * Connect one of the AC mains wires (typically the Live wire) to the Relay Module's **`COM`** (Common) terminal.
+    * Connect the Relay Module's **`NO`** (Normally Open) terminal to one of the appliance's power wires (e.g., the Live wire of the fan/light).
+    * Connect the other appliance power wire (e.g., Neutral) directly to the mains Neutral.
+
+    *(**Important:** Make sure your relay's current rating (e.g., 5A, 10A) is sufficient for the appliance you are connecting.)*
+
+#### Code Considerations:
+* With the Logic Level Shifter correctly wired, your NodeMCU will provide a 3.3V signal to the LLS, which will convert it to a robust 5V signal for the relay.
+* You should use the **standard active-LOW logic** for your relay in the code, which is the most common for these modules. This means:
+    * To turn the fan/light **ON**: `digitalWrite(FAN_RELAY_PIN, LOW);`
+    * To turn the fan/light **OFF**: `digitalWrite(FAN_RELAY_PIN, HIGH);`
+* Ensure your `setFan` function is:
     ```cpp
-    const char* ssid = "YOUR_WIFI_SSID";
-    const char* password = "YOUR_WIFI_PASSWORD";
+    void setFan(bool state) {
+      fanState = state;
+      digitalWrite(FAN_RELAY_PIN, fanState ? LOW : HIGH); // If fanState is true (ON), set LOW (ON), else HIGH (OFF)
+      Serial.print("Fan set to: ");
+      Serial.println(fanState ? "ON" : "OFF");
+    }
     ```
-    **Replace `"YOUR_WIFI_SSID"` and `"YOUR_WIFI_PASSWORD"` with your actual Wi-Fi network name and password.** If your Wi-Fi credentials change, you will need to update the sketch and re-flash the NodeMCU.
-
-### **2. Android Application**
-- **Platform:** Built using Java for Android OS.
-- **User Interface:** Clean, user-friendly with intuitive controls.
-- **Core Features:**
-  - **Fan ON/OFF:** Sends HTTP GET requests (`/on`, `/off`) to toggle fan power.
-  - **Automatic OFF Scheduling:**
-    - Uses `TimePickerDialog` to select shutdown time.
-    - Sends GET request `/setofftime?hour=HH&minute=MM` to NodeMCU.
-    - Displays confirmation of scheduled time.
-  - **Cancel Schedule:** Sends GET request to `/cancel` endpoint.
-  - **Dynamic IP Configuration:**
-    - Users can input and save NodeMCU IP using `SharedPreferences` directly within the Android app.
-    - This allows the app to adapt to changes in the NodeMCU's assigned local IP address across launches without modifying app code.
-  - **Status Feedback:** Shows current fan state (ON, OFF, Scheduled, Error).
-  - **Robust Network Handling:**
-    - Uses `ExecutorService` for background HTTP tasks to prevent UI freezing.
-    - Implements `try-catch` for error handling and displays user-friendly `Toast` messages.
-  - **Network Security:**
-    - Configures `network_security_config.xml` to allow HTTP traffic to local IPs.
-
-### **Communication Protocol**
-- **Type:** HTTP GET
-- **Port:** 80
-- **Endpoints:**
-  - `/on` – Turn fan ON
-  - `/off` – Turn fan OFF
-  - `/setofftime?hour=HH&minute=MM` – Set auto-OFF schedule
-  - `/cancel` – Cancel existing schedule
-- **Responses:** Simple text confirmations (e.g., "Fan ON", "Schedule Set").
+    And your `setup()` function includes:
+    ```cpp
+    void setup() {
+      // ...
+      pinMode(FAN_RELAY_PIN, OUTPUT);
+      digitalWrite(FAN_RELAY_PIN, HIGH); // Ensure relay is OFF initially (active-LOW)
+      // ...
+    }
+    ```
 
 ---
 
-## **User Experience & Benefits**
+## Software Configuration
 
-- 🧠 **Convenience:** Control fan from anywhere on the Wi-Fi network.
-- ⚡ **Energy Efficiency:** Prevent unnecessary power usage via scheduling.
-- ⏰ **Smart Wake-Up Feature:** Uses the fan turning off to gently wake users — a modern twist on a classic parenting trick!
-- 🔄 **Flexible IP Handling (App-side):** Update NodeMCU's IP within the Android app without modifying app code.
-- 🧭 **Simple UI:** Clean design for easy interaction.
-
----
-
-## **Technical Considerations**
-
-- 📶 **Local Network Dependency:** Both Android device and NodeMCU must be on the same Wi-Fi network.
-- 🌐 **Time Synchronization:** Accurate scheduling requires reliable internet for NTP.
-- 🔌 **Power Continuity:** NodeMCU must stay powered and connected; it auto-reconnects and re-syncs NTP on disconnection.
-
----
-
-> 💡 *This project integrates hardware control, real-time scheduling, and mobile development into a simple yet effective smart home utility.*
-> 💻 *Built with AI tools for code suggestions/debugging.*
+*(Add your existing sections for WiFi setup, web server endpoints, NTP client setup, etc., here.)*
